@@ -1,0 +1,53 @@
+{
+  "name": "aurelia1-wp5-bug-repro",
+  "description": "An Aurelia client application.",
+  "version": "0.1.0",
+  "repository": {
+    "type": "???",
+    "url": "???"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "aurelia-bootstrapper": "^2.3.3",
+    "aurelia-animator-css": "^1.0.4"
+  },
+  "devDependencies": {
+    "aurelia-testing": "^1.0.0",
+    "eslint": "^7.29.0",
+    "minimatch": "^3.0.4",
+    "typescript": "^4.3.5",
+    "@types/node": "^15.12.5",
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
+    "ts-loader": "^9.2.3",
+    "@types/webpack": "^5.28.0",
+    "html-webpack-plugin": "^5.3.2",
+    "copy-webpack-plugin": "^9.0.1",
+    "mini-css-extract-plugin": "^2.0.0",
+    "aurelia-webpack-plugin": "^5.0.0",
+    "duplicate-package-checker-webpack-plugin": "^3.0.0",
+    "clean-webpack-plugin": "4.0.0-alpha.0",
+    "webpack": "^5.41.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2",
+    "style-loader": "^3.0.0",
+    "url-loader": "^4.1.1",
+    "css-loader": "^5.2.6",
+    "file-loader": "^6.2.0",
+    "app-settings-loader": "^2.0.0",
+    "json-loader": "^0.5.7",
+    "html-loader": "^2.1.2",
+    "istanbul-instrumenter-loader": "^3.0.1",
+    "webpack-bundle-analyzer": "^4.4.2",
+    "tree-kill": "^1.2.2"
+  },
+  "scripts": {
+    "build": "webpack --env.production --extractCss",
+    "start": "webpack-dev-server --extractCss",
+    "build:dev": "webpack --extractCss",
+    "analyze": "webpack --env.production --analyze"
+  },
+  "engines": {
+    "node": ">=10.12.0"
+  }
+}
