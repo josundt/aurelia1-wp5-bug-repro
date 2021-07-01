@@ -8,8 +8,11 @@
   },
   "license": "MIT",
   "dependencies": {
+    "aurelia-animator-css": "^1.0.4",
     "aurelia-bootstrapper": "^2.3.3",
-    "aurelia-animator-css": "^1.0.4"
+    "aurelia-fetch-client": "^1.8.2",
+    "bootstrap": "^4.6.0",
+    "@fortawesome/fontawesome-free": "^5.15.3"
   },
   "devDependencies": {
     "aurelia-testing": "^1.0.0",
@@ -25,7 +28,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "mini-css-extract-plugin": "^2.0.0",
     "aurelia-webpack-plugin": "^5.0.0",
-    "duplicate-package-checker-webpack-plugin": "^3.0.0",
+    "@cerner/duplicate-package-checker-webpack-plugin": "^2.1.0",
     "clean-webpack-plugin": "4.0.0-alpha.0",
     "webpack": "^5.41.1",
     "webpack-cli": "^4.7.2",
@@ -42,10 +45,12 @@
     "tree-kill": "^1.2.2"
   },
   "scripts": {
-    "build": "webpack --env.production --extractCss",
-    "start": "webpack-dev-server --extractCss",
-    "build:dev": "webpack --extractCss",
-    "analyze": "webpack --env.production --analyze"
+    "postinstall": "node ./tempfix/fix-aurelia-loader-webpack",
+    "build": "webpack --env production --env extractCss",
+    "build:dev": "webpack --env extractCss",
+    "start": "webpack serve --env extractCss",
+    "start:prod": "webpack serve --env production --env extractCss",
+    "analyze": "webpack --env production --env analyze"
   },
   "engines": {
     "node": ">=10.12.0"

@@ -1,6 +1,6 @@
 import { Aurelia } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';
-import * as environment from '../config/environment.json';
+import environment from '../config/environment.json';
 
 export function configure(aurelia: Aurelia): void {
   aurelia.use

@@ -2,10 +2,9 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
+const DuplicatePackageCheckerPlugin = require('@cerner/duplicate-package-checker-webpack-plugin');
 const project = require('./aurelia_project/aurelia.json');
 const { AureliaPlugin, ModuleDependenciesPlugin } = require('aurelia-webpack-plugin');
-const { ProvidePlugin } = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -29,7 +28,8 @@ const cssRules = [
 ];
 
 
-module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, host } = {}) => ({
+module.exports = ({ production, extractCss, analyze, tests, hmr, port, host } = {}) => ({
+  target: "web", // This is required with aurelia-webpack-plugin 5, if not specifies, it falls back to pal-nodesjs. Will fix in PR
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [srcDir, 'node_modules'],
@@ -64,7 +64,7 @@ module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, h
     runtimeChunk: true,  // separates the runtime chunk, required for long term cacheability
     // moduleIds is the replacement for HashedModuleIdsPlugin and NamedModulesPlugin deprecated in https://github.com/webpack/webpack/releases/tag/v4.16.0
     // changes module id's to use hashes be based on the relative path of the module, required for long term cacheability
-    moduleIds: 'hashed',
+    moduleIds: 'deterministic',
     // Use splitChunks to breakdown the App/Aurelia bundle down into smaller chunks
     // https://webpack.js.org/plugins/split-chunks-plugin/
     splitChunks: {
@@ -195,16 +195,19 @@ module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, h
     open: project.platform.open,
     hot: hmr || project.platform.hmr,
     port: port || project.platform.port,
+    sockHost: "localhost",
+    sockPort: port || project.platform.port,
+    sockPath: "/sockjs-node",
     host: host
   },
-  devtool: production ? 'nosources-source-map' : 'cheap-module-eval-source-map',
+  devtool: production ? /* 'nosources-source-map' */ 'eval-cheap-module-source-map' /* temp for debugging */ : 'eval-cheap-module-source-map',
   module: {
     rules: [
       // CSS required in JS/TS files should use the style-loader that auto-injects it into the website
       // only when the issuer is a .js/.ts file, so the loaders are not applied inside html templates
       {
         test: /\.css$/i,
-        issuer: [{ not: [{ test: /\.html$/i }] }],
+        issuer: { not: /\.html$/i },
         use: extractCss ? [{
           loader: MiniCssExtractPlugin.loader
         }, ...cssRules
@@ -212,7 +215,7 @@ module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, h
       },
       {
         test: /\.css$/i,
-        issuer: [{ test: /\.html$/i }],
+        issuer: /\.html$/i,
         // CSS required in templates cannot be extracted safely
         // because Aurelia would try to require it again in runtime
         use: cssRules
@@ -238,12 +241,6 @@ module.exports = ({ production } = {}, {extractCss, analyze, tests, hmr, port, h
   plugins: [
     ...when(!tests, new DuplicatePackageCheckerPlugin()),
     new AureliaPlugin(),
-    new ProvidePlugin({
-      'jQuery': 'jquery',
-      '$': 'jquery',
-      'window.jQuery': 'jquery',
-      'window.$': 'jquery'
-    }),
     new ModuleDependenciesPlugin({
       'aurelia-testing': ['./compile-spy', './view-spy']
     }),

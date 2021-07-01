@@ -1,32 +1,22 @@
-import {computedFrom} from 'aurelia-framework';
+import { Container, inject } from "aurelia-framework";
 
+@inject(Container)
 export class Welcome {
-  public heading = 'Welcome to the Aurelia Navigation App!';
-  public firstName = 'John';
-  public lastName = 'Doe';
-  private previousValue: string = this.fullName;
-
-  // Getters can't be directly observed, so they must be dirty checked.
-  // However, if you tell Aurelia the dependencies, it no longer needs to dirty check the property.
-  @computedFrom('firstName', 'lastName')
-  get fullName(): string {
-    return `${this.firstName} ${this.lastName}`;
+  constructor(private readonly container: Container) {
+    this.rootContainer = container.root;
   }
 
-  public submit() {
-    this.previousValue = this.fullName;
-    alert(`Welcome, ${this.fullName}!`);
-  }
+  private rootContainer: Container;
 
-  public canDeactivate(): boolean | undefined {
-    if (this.fullName !== this.previousValue) {
-      return confirm('Are you sure you want to leave?');
-    }
-  }
-}
+  resolvables: string[] = [];
 
-export class UpperValueConverter {
-  public toView(value: string): string {
-    return value && value.toUpperCase();
+  activate(): void {
+    const resolvers = (this.rootContainer as Record<string, any>)["_resolvers"] as Map<any, any>;
+    const keys = Array.from(resolvers.keys());
+    this.resolvables = keys.map(r =>
+      typeof r === "function" ?
+        (/^function\s+([^(]+)/.exec(r.toString())?.[1] ?? r.toString()) + " (ctor)" :
+        r.constructor.name + " (instance)"
+    ).sort();
   }
 }
